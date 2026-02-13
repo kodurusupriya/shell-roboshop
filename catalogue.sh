@@ -1,17 +1,12 @@
 #!/bin/bash
 
-
-set -e # this will be checking for errors, if errors it will exit
-
-#!/bin/bash
-
 USERID=$(id -u)
 LOGS_FOLDER="/var/log/shell-roboshop"
 LOGS_FILE="$LOGS_FOLDER/$0.log"
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
-N="\e[34m"
+N="\e[0m"
 SCRIPT_DIR=$PWD
 MONGODB_HOST=mongodb.supriya1999.online
 if [ $USERID -ne 0 ]; then
@@ -50,7 +45,7 @@ else
     echo -e "Roboshop user already exist ... $Y SKIPPING $N"
 fi    
 
-mkdir /app 
+mkdir -p /app 
 VALIDATE $? "creating app directory"
 
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
@@ -62,13 +57,13 @@ VALIDATE $? "Moving to app directory"
 rm -rf /app/*
 VALIDATE $? "Removing existing code"
 
-unzip /tmp/catalogue.zip
+unzip /tmp/catalogue.zip &>>$LOGS_FILE
 VALIDATE $? "Uzip catalogue code"
 
-npm install
+npm install &>>$LOGS_FILE
 VALIDATE $? "installing dependencies"
 
-cp SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
+cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
 VALIDATE $? "created systemctl service"
 
 systemctl daemon-reload
