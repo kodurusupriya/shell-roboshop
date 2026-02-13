@@ -8,49 +8,45 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 SCRIPT_DIR=$PWD
-MYSQL_HOST=mysql.supriya1999.online
+MONGODB_HOST=mongodb.daws88s.online
+
 if [ $USERID -ne 0 ]; then
-    echo -e "$R please run this script with root user access $N"  | tee -a $LOGS_FILE
+    echo -e "$R Please run this script with root user access $N" | tee -a $LOGS_FILE
     exit 1
 fi
 
 mkdir -p $LOGS_FOLDER
 
-#by default shell will not execute,only executed when called
 VALIDATE(){
-
-        if [ $1 -ne 0 ]; then 
-            echo -e "$2 ... $R failure $N" | tee -a $LOGS_FILE
-            exit 1
-        else 
-            echo -e "$2 ... $G success $N"  | tee -a $LOGS_FILE
-        fi     
-
+    if [ $1 -ne 0 ]; then
+        echo -e "$2 ... $R FAILURE $N" | tee -a $LOGS_FILE
+        exit 1
+    else
+        echo -e "$2 ... $G SUCCESS $N" | tee -a $LOGS_FILE
+    fi
 }
 
 dnf module disable nginx -y &>>$LOGS_FILE
 dnf module enable nginx:1.24 -y &>>$LOGS_FILE
 dnf install nginx -y &>>$LOGS_FILE
-VALIDATE $? "Installing nginx"
+VALIDATE $? "Installing Nginx"
 
-systemctl enable nginx &>>$LOGS_FILE
-systemctl start nginx &>>$LOGS_FILE
-VALIDATE $? "Enabled and Started nginx"
+systemctl enable nginx  &>>$LOGS_FILE
+systemctl start nginx 
+VALIDATE $? "Enabled and started nginx"
 
 rm -rf /usr/share/nginx/html/* 
 VALIDATE $? "Remove default content"
 
-curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
+curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip &>>$LOGS_FILE
 cd /usr/share/nginx/html 
 unzip /tmp/frontend.zip &>>$LOGS_FILE
-VALIDATE $? "Downloaded and Unzipped Frontend"
+VALIDATE $? "Downloaded and unzipped frontend"
 
 rm -rf /etc/nginx/nginx.conf
 
 cp $SCRIPT_DIR/nginx.conf /etc/nginx/nginx.conf
-VALIDATE $? "copied our nginx conf file"
+VALIDATE $? "Copied our nginx conf file"
 
 systemctl restart nginx
-VALIDATE $? "Restarted nginx"
-
-
+VALIDATE $? "Restarted Nginx"
