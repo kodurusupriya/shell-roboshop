@@ -12,7 +12,8 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[34m"
- 
+SCRIPT_DIR=$PWD
+MONGODB_HOST=mongodb.supriya1999.online
 if [ $USERID -ne 0 ]; then
     echo -e "$R please run this script with root user access $N"  | tee -a $LOGS_FILE
     exit 1
@@ -58,21 +59,35 @@ VALIDATE $? "Downloading catalogue code"
 cd /app
 VALIDATE $? "Moving to app directory"
 
+m -rf /app/*
+VALIDATE $? "Removing existing code"
+
 unzip /tmp/catalogue.zip
 VALIDATE $? "Uzip catalogue code"
 
 npm install
 VALIDATE $? "installing dependencies"
 
-cp catalogue.service /etc/systemd/system/catalogue.service
+cp SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
 VALIDATE $? "created systemctl service"
 
 systemctl daemon-reload
-systemctl enable catalogue 
+systemctl enable catalogue &>>$LOGS_FILE
 systemctl start catalogue
 
 VALIDATE $? "starting and enabling catalogue
 
+cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+dnf install mongodb-mongosh -y
 
+INDEX=$(mongosh --host $MONGODB_HOST --quiet --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
+if [ $INDEX -le 0 ] then 
+    mongosh --host $MONGODB_HOST </app/db/master-data.js
+    VALIDATE $? "loading products"
+else 
+    echo -e "product already loaded ... $Y SKIPPING $N"
+fi
+systemctl restart catalogue
+VALIDATE $? "restarting catalogue"
 
-
+l
