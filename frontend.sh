@@ -34,7 +34,7 @@ dnf install nginx -y &>>$LOGS_FILE
 VALIDATE $? "Installing nginx"
 
 systemctl enable nginx &>>$LOGS_FILE
-systemctl start nginx 
+systemctl start nginx &>>$LOGS_FILE
 VALIDATE $? "Enabled and Started nginx"
 
 rm -rf /usr/share/nginx/html/* 
@@ -42,7 +42,7 @@ VALIDATE $? "Remove default content"
 
 curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
 cd /usr/share/nginx/html 
-unzip /tmp/frontend.zip
+unzip /tmp/frontend.zip &>>$LOGS_FILE
 VALIDATE $? "Downloaded and Unzipped Frontend"
 
 rm -rf /etc/nginx/nginx.conf
