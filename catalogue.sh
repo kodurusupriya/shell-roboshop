@@ -59,7 +59,7 @@ VALIDATE $? "Downloading catalogue code"
 cd /app
 VALIDATE $? "Moving to app directory"
 
-m -rf /app/*
+rm -rf /app/*
 VALIDATE $? "Removing existing code"
 
 unzip /tmp/catalogue.zip
@@ -75,7 +75,7 @@ systemctl daemon-reload
 systemctl enable catalogue &>>$LOGS_FILE
 systemctl start catalogue
 
-VALIDATE $? "starting and enabling catalogue
+VALIDATE $? "starting and enabling catalogue"
 
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 dnf install mongodb-mongosh -y
