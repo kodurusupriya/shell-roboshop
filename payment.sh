@@ -57,7 +57,7 @@ cd /app
 pip3 install -r requirements.txt
 VALIDATE $? "Installing Dependencies"
 
-cp $SCRIPT_DIR/shipping.service /etc/systemd/system/payment.service
+cp $SCRIPT_DIR/payment.service /etc/systemd/system/payment.service
 VALIDATE $? "created systemctl service"
 
 systemctl daemon-reload
