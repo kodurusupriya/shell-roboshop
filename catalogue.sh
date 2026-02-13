@@ -90,4 +90,3 @@ fi
 systemctl restart catalogue
 VALIDATE $? "restarting catalogue"
 
-l
