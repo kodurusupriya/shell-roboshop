@@ -66,7 +66,7 @@ VALIDATE $? "created systemctl service"
 dnf install mysql -y &>>$LOGS_FILE
 VALIDATE $? "Installing MYSQL"
 
-mysql -h $MYSQL_HOST-uroot -pRoboShop@1 < /app/db/schema.sql
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql
 mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql 
 mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql
 
